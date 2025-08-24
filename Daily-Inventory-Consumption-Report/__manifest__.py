@@ -20,7 +20,7 @@
 #
 ################################################################################
 {
-    "name": "Sirelkhatim - Daily Inventory Consumption Report",
+    "name": "Daily Inventory Consumption Report",
     "version": "18.0.1.0.0",
     "summary": "Average daily consumption per product over a selected period, with on‑hand and coverage days",
     "author": "Sirelkhatim",
