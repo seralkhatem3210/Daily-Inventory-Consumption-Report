@@ -1,0 +1,125 @@
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from psycopg2 import sql
+
+class InventoryConsumptionWizard(models.TransientModel):
+    _name = 'inventory.consumption.wizard'
+    _description = 'Inventory Consumption Report Wizard'
+
+    def _default_date_from(self):
+        today = fields.Date.context_today(self)
+        if isinstance(today, str):
+            today = fields.Date.to_date(today)
+        return today.replace(day=1)
+
+    date_from = fields.Date(string="From Date", required=True, default=_default_date_from)
+    date_to   = fields.Date(string="To Date", required=True, default=lambda self: fields.Date.context_today(self))
+    line_ids  = fields.One2many('inventory.consumption.line', 'wizard_id', string="Lines", readonly=True)
+
+    def _period_days(self, d1, d2):
+        return max((d2 - d1).days + 1, 1)
+
+    def _compute_consumed(self):
+        """Return dict {product_id: qty_consumed} during period.
+        Prefer stock_move_line.qty_done if the column exists; otherwise fall back to stock_move.product_uom_qty.
+        """
+        self.env.cr.execute("""
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_name='stock_move_line' AND column_name='qty_done'
+            LIMIT 1
+        """)
+        has_qty_done = bool(self.env.cr.fetchone())
+
+        if has_qty_done:
+            query = '''
+                SELECT sm.product_id, SUM(COALESCE(sml.qty_done, 0)) AS qty
+                FROM stock_move_line AS sml
+                JOIN stock_move AS sm ON sml.move_id = sm.id
+                JOIN stock_location src  ON sml.location_id = src.id
+                JOIN stock_location dest ON sml.location_dest_id = dest.id
+                WHERE sm.state = 'done'
+                  AND src.usage = 'internal'
+                  AND dest.usage != 'internal'
+                  AND DATE(sm.date) BETWEEN %s AND %s
+                GROUP BY sm.product_id
+            '''
+            self.env.cr.execute(query, (self.date_from, self.date_to))
+        else:
+            # Fallback: use stock_move quantities (done moves out of internal)
+            query = '''
+                SELECT sm.product_id, SUM(COALESCE(sm.product_uom_qty, 0)) AS qty
+                FROM stock_move AS sm
+                JOIN stock_location src  ON sm.location_id = src.id
+                JOIN stock_location dest ON sm.location_dest_id = dest.id
+                WHERE sm.state = 'done'
+                  AND src.usage = 'internal'
+                  AND dest.usage != 'internal'
+                  AND DATE(sm.date) BETWEEN %s AND %s
+                GROUP BY sm.product_id
+            '''
+            self.env.cr.execute(query, (self.date_from, self.date_to))
+        return dict(self.env.cr.fetchall() or [])
+
+    def action_generate(self):
+        self.ensure_one()
+        cr = self.env.cr
+
+        # Clear previous lines for this wizard run
+        self.line_ids.unlink()
+
+        consumed = self._compute_consumed()
+
+        # On-hand NOW in all internal locations
+        cr.execute('''
+            SELECT sq.product_id, COALESCE(SUM(sq.quantity), 0) AS qty
+            FROM stock_quant sq
+            JOIN stock_location loc ON sq.location_id = loc.id
+            WHERE loc.usage = 'internal'
+            GROUP BY sq.product_id
+        ''')
+        onhand_now = dict(cr.fetchall() or [])
+
+        product_ids = set(consumed.keys()) | set(onhand_now.keys())
+        if not product_ids:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'inventory.consumption.wizard',
+                'view_mode': 'form',
+                'res_id': self.id,
+                'target': 'new',
+                'effect': {'fadeout': 'slow', 'message': _('No data for the selected period.')},
+            }
+
+        products = self.env['product.product'].browse(list(product_ids))
+        period_days = self._period_days(self.date_from, self.date_to)
+
+        vals_list = []
+        for p in products:
+            total_out = float(consumed.get(p.id, 0.0))
+            avg_daily = (total_out / period_days) if period_days else 0.0
+            on_hand = float(onhand_now.get(p.id, 0.0))
+            coverage = (on_hand / avg_daily) if avg_daily else 0.0
+
+            vals_list.append({
+                'wizard_id': self.id,
+                'product_id': p.id,
+                'uom_id': p.uom_id.id,
+                'period_days': period_days,
+                'total_consumed': total_out,
+                'avg_daily': avg_daily,
+                'on_hand_now': on_hand,
+                'coverage_days': coverage,
+            })
+
+        self.env['inventory.consumption.line'].create(vals_list)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Daily Consumption Report'),
+            'res_model': 'inventory.consumption.line',
+            'view_mode': 'list,pivot,graph',
+            'domain': [('wizard_id', '=', self.id)],
+            'context': {'search_default_groupby_product': 1},
+            'target': 'current',
+        }

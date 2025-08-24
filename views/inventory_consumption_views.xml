@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data noupdate="0">
+
+
+
+      <!-- Search view for report lines -->
+      <record id="view_inventory_consumption_line_search" model="ir.ui.view">
+        <field name="name">inventory.consumption.line.search</field>
+        <field name="model">inventory.consumption.line</field>
+        <field name="arch" type="xml">
+          <search string="Consumption Lines">
+            <field name="product_id" string="Product"/>
+            <!-- <filter string="Coverage &lt; 7 days" domain="[('coverage_days', '&lt;', 7)]"/> -->
+            <!-- <filter string="No Consumption" domain="[('total_consumed', '=', 0)]"/> -->
+            <!-- <filter string="Consumed &gt; 0" domain="[('total_consumed', '&gt;', 0)]"/> -->
+            <!-- <group expand="1" string="Group By">
+              <filter string="Product" context="{'group_by': 'product_id'}"/> -->
+              <!-- <filter string="Days in Period" context="{'group_by': 'period_days'}"/> -->
+              <!-- إن أضفت حقل related أدناه -->
+              <!-- <filter string="Category" context="{'group_by': 'categ_id'}"/> -->
+            <!-- </group> -->
+          </search>
+        </field>
+      </record>
+
+
+
+    <!-- Wizard Form -->
+    <record id="view_inventory_consumption_wizard_form" model="ir.ui.view">
+      <field name="name">inventory.consumption.wizard.form</field>
+      <field name="model">inventory.consumption.wizard</field>
+      <field name="arch" type="xml">
+        <!-- <form string="Daily Consumption (Period)">
+          <group>
+            <field name="date_from"/>
+            <field name="date_to"/>
+          </group>
+          <footer>
+            <button name="action_generate" string="Generate Report" type="object" class="btn-primary"/>
+            <button string="Close" special="cancel" class="btn-secondary"/>
+          </footer>
+        </form> -->
+        <form string="Daily Consumption (Period)">
+          <group>
+            <group>
+              <field name="date_from"/>
+              <field name="date_to"/>
+            </group>
+            <group>
+              <!-- NEW: pick one or more warehouses; empty = all -->
+              <field name="warehouse_ids" widget="many2many_tags" options="{'no_quick_create': True}"/>
+            </group>
+          </group>
+          <footer>
+            <button name="action_generate" string="Generate Report" type="object" class="btn-primary"/>
+            <button string="Close" special="cancel" class="btn-secondary"/>
+          </footer>
+        </form>
+
+      </field>
+    </record>
+
+    <record id="action_open_inventory_consumption_wizard" model="ir.actions.act_window">
+      <field name="name">Daily Consumption (Period)</field>
+      <field name="res_model">inventory.consumption.wizard</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <!-- Lines List View -->
+    <record id="view_inventory_consumption_line_list" model="ir.ui.view">
+      <field name="name">inventory.consumption.line.list</field>
+      <field name="model">inventory.consumption.line</field>
+      <field name="type">list</field>
+      <field name="arch" type="xml">
+        <list string="Daily Consumption" create="false" delete="false" editable="top">
+          <field name="product_id"/>
+          <field name="uom_id" invisible="1"/>
+          <field name="period_days"/>
+          <field name="total_consumed"/>
+          <field name="avg_daily"/>
+          <field name="on_hand_now"/>
+          <field name="coverage_days"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_inventory_consumption_line_pivot" model="ir.ui.view">
+      <field name="name">inventory.consumption.line.pivot</field>
+      <field name="model">inventory.consumption.line</field>
+      <field name="type">pivot</field>
+      <field name="arch" type="xml">
+        <pivot string="Daily Consumption">
+          <field name="product_id" type="row"/>
+          <field name="total_consumed" type="measure"/>
+          <field name="avg_daily" type="measure"/>
+          <field name="on_hand_now" type="measure"/>
+          <field name="coverage_days" type="measure"/>
+        </pivot>
+      </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="view_inventory_consumption_line_graph" model="ir.ui.view">
+      <field name="name">inventory.consumption.line.graph</field>
+      <field name="model">inventory.consumption.line</field>
+      <field name="type">graph</field>
+      <field name="arch" type="xml">
+        <graph string="Daily Consumption" type="bar">
+          <field name="product_id"/>
+          <field name="avg_daily" type="measure"/>
+        </graph>
+      </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_inventory_consumption_root"
+              name="Consumption Reports"
+              parent="stock.menu_warehouse_report"
+              sequence="55"/>
+    <menuitem id="menu_inventory_consumption_period"
+              name="Daily Consumption (Period)"
+              parent="menu_inventory_consumption_root"
+              action="action_open_inventory_consumption_wizard"
+              sequence="10"/>
+  </data>
+</odoo>

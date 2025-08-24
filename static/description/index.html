@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Periodically Consumed Report for Odoo 18</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal:#09b4a8; --blue:#228aec; --amber:#ea9b51; --ink:#374151; --bg:#F7F6F9; --brand:#388ad7;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,sans-serif;color:var(--ink);}
+    .band{background:var(--brand);color:#fff;padding:1.25rem 1rem}
+    .band h4{margin:.2rem 0 .6rem;font-weight:700}
+    .band ul{margin:.2rem 0 .8rem 1.25rem}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{background:var(--bg);border-radius:14px;margin:1.25rem auto;padding:2.5rem 1rem;border:1px solid #e5e7eb}
+    .title{font-size:2rem;font-weight:800;margin:0}
+    .title span:nth-child(1){color:var(--teal)}
+    .title span:nth-child(2){color:var(--blue)}
+    .title span:nth-child(3){color:var(--amber)}
+    p.lead{font-size:1.1rem;max-width:900px;margin:.9rem auto 0}
+    .video{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;margin:1.25rem auto}
+    .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .features{margin-top:1.25rem}
+    .features h3{font-size:1.6rem;text-align:center;margin:0 0 .5rem}
+    .features ul{max-width:800px;margin:0 auto;line-height:1.7}
+    .gallery{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));margin:1.75rem auto;max-width:1000px}
+    .gallery img{width:100%;height:auto;border:1px solid #e5e7eb;border-radius:12px;display:block}
+    .cards{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:2.5rem 0}
+    .card{border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+    .card img{width:100%;height:auto;display:block}
+    .card .body{padding:.9rem 1rem;text-align:center}
+    .support{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin:2rem 0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
+    .btn{background:#00c4b4;color:#fff;text-decoration:none;padding:.55rem .9rem;border-radius:6px;display:inline-block;font-weight:600}
+    @media (max-width:720px){
+      .title{font-size:1.6rem}
+      .gallery{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <!-- Compatibility / Last Update -->
+  <div class="band">
+    <div class="wrap">
+      <h4>Compatibility</h4>
+      <ul>
+        <li>Compatible with Odoo 18 Community and Enterprise</li>
+        <li>Works with native Inventory (stock) module</li>
+      </ul>
+      <h4>Last Updated</h4>
+      <ul>
+        <li>Saturday, 23 August 2025</li>
+      </ul>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <!-- Hero -->
+    <section class="hero">
+      <h1 class="title">
+        <span>Periodically</span> <span>Consumed</span> <span>Report</span> for Odoo 18
+      </h1>
+      <p class="lead">
+        Analyze how products are consumed over any date range. See total consumed, average daily, on-hand now,
+        and coverage days—filtered by one or more warehouses.
+      </p>
+
+      <!-- YouTube: replace VIDEO_ID with your YouTube ID -->
+      <div class="video">
+        <iframe src="https://www.youtube.com/embed/VIDEO_ID?rel=0" allowfullscreen></iframe>
+      </div>
+
+      <!-- Key Features -->
+      <div class="features">
+        <h3>Key Features</h3>
+        <ul>
+          <li>Generate period reports (weekly, monthly, custom ranges)</li>
+          <li>Filter by specific warehouses or include all internal locations</li>
+          <li>Metrics: <b>Total Consumed</b>, <b>Avg Daily</b>, <b>On-Hand Now</b>, <b>Coverage (days)</b></li>
+          <li>List, Pivot and Graph views with search, filters and group-bys</li>
+          <li>Counts any move <i>leaving</i> the selected warehouse set (smart internal→internal handling)</li>
+        </ul>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="gallery">
+        <img src="screens/screen1.png" alt="Period report wizard in Odoo" />
+        <img src="screens/screen2.png" alt="List view with consumption metrics" />
+        <img src="screens/screen3.png" alt="Pivot view of consumption" />
+        <img src="screens/screen4.png" alt="Graph view showing averages" />
+      </div>
+    </section>
+
+    <!-- Related Modules -->
+    <section>
+      <h2 style="text-align:center;margin:2rem 0 1rem">You May Also Like</h2>
+      <div class="cards">
+        <div class="card">
+          <a target="_blank" href="https://sirelkhatim.odoo.com/">
+            <img src="//apps.odoocdn.com/apps/assets/18.0/freshchat_sync/banner.png" alt="Freshchat Sync" />
+          </a>
+          <div class="body">
+            <h3 style="margin:.2rem 0;font-size:1.05rem">Freshchat Sync</h3>
+            <a class="btn" target="_blank" href="https://sirelkhatim.odoo.com/">View</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support -->
+    <section class="support">
+      <div>
+        <h3 style="margin:.2rem 0">Need Help or Customization?</h3>
+        <p style="margin:.2rem 0;color:#5c6b73">Contact us for assistance, extensions, or custom analytics.</p>
+      </div>
+      <a class="btn" href="mailto:support@yourcompany.com">Support</a>
+    </section>
+  </main>
+</body>
+</html>
