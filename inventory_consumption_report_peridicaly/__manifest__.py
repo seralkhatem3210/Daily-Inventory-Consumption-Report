@@ -36,11 +36,11 @@
         "static/description/banner.png",
         "static/description/icon.png"
     ],
-    "assets": {
-        "web.assets_backend": [
-            "freshsales_sync/static/src/**/*",
-        ],
-    },
+    # "assets": {
+    #     "web.assets_backend": [
+    #         "freshsales_sync/static/src/**/*",
+    #     ],
+    # },
 
     "installable": True,
     "application": False,
