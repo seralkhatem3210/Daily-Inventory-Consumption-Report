@@ -1,127 +1,316 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <title>Periodically Consumed Report for Odoo 18</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Periodically Consumed Report for Odoo 18</title>
+  <meta name="description" content="Analyze product consumption over any date range in Odoo 18. Totals, averages, on‑hand, and coverage days with warehouse filters, list/pivot/graph views." />
+  <link rel="canonical" href="https://example.com/periodically-consumed-report/" />
+
+  <!-- Social / Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Periodically Consumed Report for Odoo 18" />
+  <meta property="og:description" content="Totals, averages, on‑hand, and coverage days. Filter by warehouses. List/Pivot/Graph views." />
+  <meta property="og:image" content="screens/og-banner.png" />
+  <meta property="og:url" content="https://example.com/periodically-consumed-report/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Favicon (optional) -->
+  <link rel="icon" href="/favicon.ico" />
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    :root {
-      --teal:#09b4a8; --blue:#228aec; --amber:#ea9b51; --ink:#374151; --bg:#F7F6F9; --brand:#388ad7;
+    :root{
+      --brand: #388ad7;
+      --ink: #0f172a;
+      --muted: #475569;
+      --ring:  #c7d2fe;
+      --bg:   #f7f6f9;
+      --card: #ffffff;
+      --teal: #06b6d4;
+      --amber:#ea9b51;
+      --blue: #228aec;
+      --border:#e5e7eb;
+      --shadow: 0 10px 30px rgba(2,6,23,.08);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --brand:#4ea5ff; --ink:#e5e7eb; --muted:#94a3b8; --ring:#1d4ed8; --bg:#0b1220; --card:#0f172a; --border:#1f2937;
+        --teal:#22d3ee; --amber:#fbbf24; --blue:#60a5fa; --shadow: 0 10px 30px rgba(0,0,0,.35);
+      }
+      img{filter: brightness(0.98) contrast(1.02)}
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,sans-serif;color:var(--ink);}
-    .band{background:var(--brand);color:#fff;padding:1.25rem 1rem}
-    .band h4{margin:.2rem 0 .6rem;font-weight:700}
-    .band ul{margin:.2rem 0 .8rem 1.25rem}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
-    .hero{background:var(--bg);border-radius:14px;margin:1.25rem auto;padding:2.5rem 1rem;border:1px solid #e5e7eb}
-    .title{font-size:2rem;font-weight:800;margin:0}
-    .title span:nth-child(1){color:var(--teal)}
-    .title span:nth-child(2){color:var(--blue)}
-    .title span:nth-child(3){color:var(--amber)}
-    p.lead{font-size:1.1rem;max-width:900px;margin:.9rem auto 0}
-    .video{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;margin:1.25rem auto}
-    .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-    .features{margin-top:1.25rem}
-    .features h3{font-size:1.6rem;text-align:center;margin:0 0 .5rem}
-    .features ul{max-width:800px;margin:0 auto;line-height:1.7}
-    .gallery{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));margin:1.75rem auto;max-width:1000px}
-    .gallery img{width:100%;height:auto;border:1px solid #e5e7eb;border-radius:12px;display:block}
-    .cards{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:2.5rem 0}
-    .card{border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.04)}
-    .card img{width:100%;height:auto;display:block}
-    .card .body{padding:.9rem 1rem;text-align:center}
-    .support{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin:2rem 0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
-    .btn{background:#00c4b4;color:#fff;text-decoration:none;padding:.55rem .9rem;border-radius:6px;display:inline-block;font-weight:600}
-    @media (max-width:720px){
-      .title{font-size:1.6rem}
-      .gallery{grid-template-columns:1fr}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    a{color:inherit}
+
+    /* Top ribbon */
+    .ribbon{position:relative; isolation:isolate; background:linear-gradient(90deg,var(--brand),#6ec1ff); color:#fff}
+    .ribbon::after{content:""; position:absolute; inset:0; background:radial-gradient(1200px 120px at 50% 0%, rgba(255,255,255,.18), transparent 70%); pointer-events:none}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 1rem}
+    .ribbon-inner{display:grid;grid-template-columns:1fr 1fr;gap:24px; padding:16px 0}
+    .ribbon h4{margin:.25rem 0;font-weight:800;letter-spacing:.2px}
+    .ribbon ul{margin:.25rem 0 .5rem 1.25rem}
+
+    /* Hero */
+    .hero{position:relative;margin:24px auto;border:1px solid var(--border);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,.6)); box-shadow:var(--shadow)}
+    @media (prefers-color-scheme: dark){.hero{background:linear-gradient(180deg,rgba(15,23,42,.7),rgba(15,23,42,.6));}}
+    .hero-body{padding:36px 22px}
+    .eyebrow{display:inline-flex;gap:8px;align-items:center;font-weight:700;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+    .title{font-size:clamp(1.6rem,3.5vw,2.4rem);margin:.2rem 0 .6rem;font-weight:800;line-height:1.15}
+    .title .t1{color:var(--teal)} .title .t2{color:var(--blue)} .title .t3{color:var(--amber)}
+    .lead{max-width:900px;font-size:1.05rem;color:var(--muted);margin:.5rem 0 1rem}
+
+    /* Video */
+    .video{position:relative; padding-top:56.25%; border:1px solid var(--border); border-radius:14px; overflow:hidden; background:#000}
+    .video iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+
+    /* Feature list */
+    .feature-grid{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); margin-top:18px}
+    .feature{display:flex;gap:12px; padding:14px; background:var(--card); border:1px solid var(--border); border-radius:12px; align-items:flex-start}
+    .feature svg{flex:0 0 22px}
+
+    /* Gallery */
+    .gallery{display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); margin:24px 0}
+    .gallery img{width:100%; height:auto; border:1px solid var(--border); border-radius:12px; display:block}
+    @media (max-width:720px){ .gallery{grid-template-columns:1fr} }
+
+    /* Cards */
+    .section-title{font-size:clamp(1.3rem,2.5vw,1.6rem); text-align:center; margin:36px 0 12px; font-weight:800}
+    .cards{display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); margin:16px 0 40px}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column}
+    .card img{width:100%; height:auto; display:block}
+    .card .body{padding:14px 16px; text-align:center}
+
+    /* Support */
+    .support{display:flex;gap:16px;align-items:center;justify-content:space-between; flex-wrap:wrap;
+             background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; box-shadow:var(--shadow); margin:24px 0}
+    .btn{background:var(--teal); color:#fff; text-decoration:none; padding:.6rem .95rem; border-radius:10px; font-weight:700; display:inline-flex; align-items:center; gap:8px; border:1px solid transparent}
+    .btn:hover{filter:brightness(1.03)}
+
+    /* Utilities */
+    .badge{display:inline-block;padding:.25rem .5rem;border-radius:999px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.45)}
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+
+    /* Sticky Lang/Dir Switch */
+    .toolbar{position:sticky; top:0; z-index:10; backdrop-filter: blur(8px); background: color-mix(in oklab, var(--bg) 75%, transparent); border-bottom:1px solid var(--border)}
+    .toolbar-inner{display:flex; align-items:center; justify-content:space-between; padding:10px 0}
+    .toggle{display:flex; gap:6px}
+    .chip{padding:.35rem .6rem; border-radius:10px; background:var(--card); border:1px solid var(--border); cursor:pointer; font-size:.85rem}
+    .chip[aria-pressed="true"]{outline:2px solid var(--ring)}
+
+    /* Back to top */
+    .to-top{position:fixed; right:16px; bottom:16px; padding:.6rem .8rem; border-radius:12px; border:1px solid var(--border); background:var(--card); box-shadow:var(--shadow); text-decoration:none}
+
+    @media (prefers-reduced-motion:no-preference){
+      .fade-in{opacity:0; transform:translateY(8px); animation:fade .6s ease .1s forwards}
+      @keyframes fade{to{opacity:1; transform:none}}
     }
   </style>
 </head>
 <body>
-  <!-- Compatibility / Last Update -->
-  <div class="band">
-    <div class="wrap">
-      <h4>Compatibility</h4>
-      <ul>
-        <li>Compatible with Odoo 18 Community and Enterprise</li>
-        <li>Works with native Inventory (stock) module</li>
-      </ul>
-      <h4>Last Updated</h4>
-      <ul>
-        <li>Saturday, 23 August 2025</li>
-      </ul>
+  <!-- Toolbar: language & direction toggles -->
+  <header class="toolbar">
+    <div class="wrap toolbar-inner">
+      <strong>Periodically Consumed Report</strong>
+      <div class="toggle" role="group" aria-label="Language and direction">
+        <button class="chip" id="lang-en" aria-pressed="true">EN</button>
+        <button class="chip" id="lang-ar" aria-pressed="false">AR</button>
+        <button class="chip" id="dir-ltr" aria-pressed="true" title="Left-to-right">LTR</button>
+        <button class="chip" id="dir-rtl" aria-pressed="false" title="Right-to-left">RTL</button>
+      </div>
     </div>
-  </div>
+  </header>
+
+  <!-- Compatibility / Updated ribbon -->
+  <section class="ribbon" role="region" aria-label="Compatibility and Last Updated">
+    <div class="wrap ribbon-inner">
+      <div>
+        <h4 data-i18n="compat">Compatibility</h4>
+        <ul>
+          <li data-i18n="compat1">Compatible with Odoo 18 Community and Enterprise</li>
+          <li data-i18n="compat2">Works with native Inventory (stock) module</li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="updated">Last Updated</h4>
+        <ul>
+          <li><time datetime="2025-08-23" id="last-updated">Saturday, 23 August 2025</time></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
   <main class="wrap">
     <!-- Hero -->
-    <section class="hero">
-      <h1 class="title">
-        <span>Periodically</span> <span>Consumed</span> <span>Report</span> for Odoo 18
-      </h1>
-      <p class="lead">
-        Analyze how products are consumed over any date range. See total consumed, average daily, on-hand now,
-        and coverage days—filtered by one or more warehouses.
-      </p>
+    <section class="hero fade-in" aria-labelledby="hero-title">
+      <div class="hero-body">
+        <div class="eyebrow"><span class="badge">Odoo 18</span><span class="badge">Inventory</span></div>
+        <h1 id="hero-title" class="title"><span class="t1" data-i18n="p1">Periodically</span> <span class="t2" data-i18n="p2">Consumed</span> <span class="t3" data-i18n="p3">Report</span> <span data-i18n="for">for</span> Odoo 18</h1>
+        <p class="lead" data-i18n="lead">Analyze how products are consumed over any date range. See total consumed, average daily, on‑hand now, and coverage days—filtered by one or more warehouses.</p>
 
-      <!-- YouTube: replace VIDEO_ID with your YouTube ID -->
-      <div class="video">
-        <iframe src="https://www.youtube.com/embed/VIDEO_ID?rel=0" allowfullscreen></iframe>
-      </div>
+        <div class="video" aria-label="Product video">
+          <!-- Replace VIDEO_ID below -->
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID?rel=0" title="Periodically Consumed Report demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+        </div>
 
-      <!-- Key Features -->
-      <div class="features">
-        <h3>Key Features</h3>
-        <ul>
-          <li>Generate period reports (weekly, monthly, custom ranges)</li>
-          <li>Filter by specific warehouses or include all internal locations</li>
-          <li>Metrics: <b>Total Consumed</b>, <b>Avg Daily</b>, <b>On-Hand Now</b>, <b>Coverage (days)</b></li>
-          <li>List, Pivot and Graph views with search, filters and group-bys</li>
-          <li>Counts any move <i>leaving</i> the selected warehouse set (smart internal→internal handling)</li>
-        </ul>
-      </div>
-
-
-
-      <!-- Screenshots -->
-      <div class="gallery">
-        <img src="screens/screen1.png" alt="Period report wizard in Odoo" />
-        <img src="screens/screen2.png" alt="List view with consumption metrics" />
-        <img src="screens/screen3.png" alt="Pivot view of consumption" />
-        <img src="screens/screen4.png" alt="Graph view showing averages" />
-      </div>
-    </section>
-
-    <!-- Related Modules -->
-    <section>
-      <h2 style="text-align:center;margin:2rem 0 1rem">You May Also Like</h2>
-      <div class="cards">
-        <div class="card">
-          <a target="_blank" href="https://sirelkhatim.odoo.com/">
-            <img src="screens/freshchat.png" alt="Freshchat Sync" />
-            <!-- <img src="//apps.odoocdn.com/apps/assets/18.0/freshchat_sync/banner.png" alt="Freshchat Sync" /> -->
-          </a>
-          <div class="body">
-            <h3 style="margin:.2rem 0;font-size:1.05rem">Freshchat Sync</h3>
-            <a class="btn" target="_blank" href="https://apps.odoo.com/apps/modules/browse?search=sirelkhatim">View</a>
+        <!-- Features -->
+        <div class="feature-grid" aria-label="Key Features">
+          <div class="feature">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+            <div>
+              <strong data-i18n="f1t">Flexible periods</strong>
+              <div class="muted" data-i18n="f1d">Generate weekly, monthly, or custom-range reports.</div>
+            </div>
           </div>
+          <div class="feature">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+            <div>
+              <strong data-i18n="f2t">Warehouse filters</strong>
+              <div class="muted" data-i18n="f2d">Include one or many internal locations/warehouses.</div>
+            </div>
+          </div>
+          <div class="feature">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+            <div>
+              <strong data-i18n="f3t">Actionable metrics</strong>
+              <div class="muted" data-i18n="f3d">Total Consumed, Avg Daily, On‑Hand, Coverage (days).</div>
+            </div>
+          </div>
+          <div class="feature">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+            <div>
+              <strong data-i18n="f4t">Multiple views</strong>
+              <div class="muted" data-i18n="f4d">List, Pivot, and Graph with filters & group‑bys.</div>
+            </div>
+          </div>
+          <div class="feature">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+            <div>
+              <strong data-i18n="f5t">Smart moves</strong>
+              <div class="muted" data-i18n="f5d">Counts any move leaving selected warehouse set.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="gallery" aria-label="Screenshots">
+          <img src="screens/screen1.png" alt="Period report wizard in Odoo" loading="lazy" />
+          <img src="screens/screen2.png" alt="List view with consumption metrics" loading="lazy" />
+          <img src="screens/screen3.png" alt="Pivot view of consumption" loading="lazy" />
+          <img src="screens/screen4.png" alt="Graph view showing averages" loading="lazy" />
         </div>
       </div>
     </section>
 
-    <!-- Support -->
-    <section class="support">
-      <div>
-        <h3 style="margin:.2rem 0">Need Help or Customization?</h3>
-        <p style="margin:.2rem 0;color:#5c6b73">Contact us for assistance, extensions, or custom analytics.</p>
+    <!-- Related Modules -->
+    <section aria-labelledby="related-title">
+      <h2 id="related-title" class="section-title" data-i18n="youMay">You May Also Like</h2>
+      <div class="cards">
+        <article class="card">
+          <a target="_blank" rel="noopener" href="https://sirelkhatim.odoo.com/">
+            <img src="screens/freshchat.png" alt="Freshchat Sync module banner" loading="lazy" />
+          </a>
+          <div class="body">
+            <h3 style="margin:.2rem 0;font-size:1.05rem" data-i18n="freshchat">Freshchat Sync</h3>
+            <a class="btn" target="_blank" rel="noopener" href="https://apps.odoo.com/apps/modules/browse?search=sirelkhatim" data-i18n="view">View</a>
+          </div>
+        </article>
       </div>
-      <a class="btn" href="mailto:support@yourcompany.com">Support</a>
+    </section>
+
+    <!-- Support -->
+    <section class="support" aria-labelledby="support-title">
+      <div>
+        <h3 id="support-title" style="margin:.2rem 0" data-i18n="help">Need Help or Customization?</h3>
+        <p class="muted" style="margin:.2rem 0" data-i18n="contact">Contact us for assistance, extensions, or custom analytics.</p>
+      </div>
+      <a class="btn" href="mailto:support@yourcompany.com" id="support-email">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 13.5 2 6.75V18h20V6.75zM12 10 2 3h20z"/></svg>
+        <span data-i18n="support">Support</span>
+      </a>
     </section>
   </main>
+
+  <a href="#top" class="to-top" aria-label="Back to top">↑</a>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Periodically Consumed Report",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Odoo 18",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+  }
+  </script>
+
+  <!-- Minimal i18n + dir toggles -->
+  <script>
+    const strings = {
+      ar: {
+        compat: "التوافق",
+        compat1: "متوافق مع أودو 18 (نسختي المجتمع والمؤسسة)",
+        compat2: "يعمل مع تطبيق المخزون القياسي",
+        updated: "آخر تحديث",
+        p1: "تقرير",
+        p2: "الاستهلاك",
+        p3: "الدوري",
+        for: "لـ",
+        lead: "حلّل استهلاك المنتجات لأي نطاق زمني. اعرف الإجمالي، ومتوسط اليومي، والمخزون الحالي، وأيام التغطية — مع إمكانية التصفية بحسب المخازن.",
+        f1t: "فترات مرنة",
+        f1d: "تقارير أسبوعية أو شهرية أو بنطاق مخصص.",
+        f2t: "تصفية بالمخازن",
+        f2d: "تضمين موقع أو أكثر من المواقع الداخلية.",
+        f3t: "مؤشرات عملية",
+        f3d: "الإجمالي، المتوسط اليومي، المتاح الآن، وأيام التغطية.",
+        f4t: "واجهات متعددة",
+        f4d: "قائمة ومحوري ورسوم مع فلاتر وتجميعات.",
+        f5t: "تعامل ذكي مع الحركات",
+        f5d: "يحتسب أي حركة خارجة من مجموعة المخازن المحددة.",
+        youMay: "قد يهمك أيضًا",
+        freshchat: "مزامنة Freshchat",
+        view: "عرض",
+        help: "هل تحتاج إلى مساعدة أو تخصيص؟",
+        contact: "تواصل معنا للدعم أو الإضافات أو التحليلات المخصصة.",
+        support: "الدعم"
+      }
+    };
+
+    function setLang(lang){
+      const map = strings[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        if(map && map[key]) el.textContent = map[key];
+      });
+      document.getElementById('lang-en').setAttribute('aria-pressed', lang==='ar'? 'false':'true');
+      document.getElementById('lang-ar').setAttribute('aria-pressed', lang==='ar'? 'true':'false');
+      // Swap title order for Arabic aesthetic (optional)
+      document.documentElement.lang = lang==='ar' ? 'ar' : 'en';
+    }
+
+    function setDir(dir){
+      document.documentElement.dir = dir;
+      document.getElementById('dir-ltr').setAttribute('aria-pressed', dir==='ltr' ? 'true':'false');
+      document.getElementById('dir-rtl').setAttribute('aria-pressed', dir==='rtl' ? 'true':'false');
+    }
+
+    document.getElementById('lang-en').addEventListener('click', ()=>setLang('en'));
+    document.getElementById('lang-ar').addEventListener('click', ()=>setLang('ar'));
+    document.getElementById('dir-ltr').addEventListener('click', ()=>setDir('ltr'));
+    document.getElementById('dir-rtl').addEventListener('click', ()=>setDir('rtl'));
+
+    // Defaults for KSA audience
+    setLang('en');
+    setDir('ltr');
+  </script>
 </body>
 </html>
