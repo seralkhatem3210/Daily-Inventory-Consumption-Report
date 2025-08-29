@@ -7,23 +7,13 @@
 #    Author: Ammu Raj (odoo@Sirelkhatim.uk)
 #
 #    You can modify it under the terms of the GNU AFFERO
-#    GENERAL PUBLIC LICENSE (AGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU AFFERO GENERAL PUBLIC LICENSE (AGPL v3) for more details.
-#
-#    You should have received a copy of the GNU AFFERO GENERAL PUBLIC LICENSE
-#    (AGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
+#    GENERAL PUBLIC LICENSE (AGPL v3), Version 3.#
 ################################################################################
 {
-    "name": "Sirelkhatim - Daily Inventory Consumption Report التوافق -  متوافق مع أودو 18 نسختي المجتمع والمؤسسة -  يعمل مع تطبيق المخزون القياسي -  آخر تحديث -  تقرير -  الاستهلاك -  الدوري -  لـ -  حلّل استهلاك المنتجات لأي نطاق زمني. اعرف الإجمالي، ومتوسط اليومي، والمخزون الحالي، وأيام التغطية — مع إمكانية التصفية بحسب المخازن. -  فترات مرنة -  تقارير أسبوعية أو شهرية أو بنطاق مخصص. -  تصفية بالمخازن -  تضمين موقع أو أكثر من المواقع الداخلية. -  مؤشرات عملية -  الإجمالي، المتوسط اليومي، المتاح الآن، وأيام التغطية. -  واجهات متعددة -  قائمة ومحوري ورسوم مع فلاتر وتجميعات. -  تعامل ذكي مع الحركات -  يحتسب أي حركة خارجة من مجموعة المخازن المحددة. -  قد يهمك أيضًا -  مزامنة Freshchat -  عرض -  هل تحتاج إلى مساعدة أو تخصيص؟ -  تواصل معنا للدعم أو الإضافات أو التحليلات المخصصة. -  الدعم ",
+    "name": "Sirelkhatim - Daily Inventory Consumption Report |  سرالختم - تقرير الاستهلاك الدوري للمخزون",
     "version": "18.0.1.0.0",
-    "summary": "Average daily consumption per product over a selected period, with on‑hand and coverage days",
-    "author": "Sirelkhatim",
+    "summary": "Analyze daily average consumption per product (with stock & coverage days) | تحليل متوسط الاستهلاك اليومي لكل منتج (مع المخزون وأيام التغطية)",
+    "author": "Sirelkhatim Technologies",
     "license": "LGPL-3",
     "website": "https://sirelkhatim.uk",
     "category": "Inventory/Reporting",
@@ -42,7 +32,35 @@
         ],
     },
 
+    "description": """
+Daily Inventory Consumption Report | تقرير الاستهلاك الدوري للمخزون
+==================================================================
+
+**Compatibility | التوافق**
+- ✅ Compatible with Odoo 18 Community & Enterprise  
+- ✅ Works with the standard Inventory application  
+
+**Features | المزايا**
+- 📊 Analyze product consumption for any time range.  
+  حلّل استهلاك المنتجات لأي نطاق زمني.  
+- 📈 See totals, daily averages, current stock, and coverage days.  
+  اعرف الإجمالي، المتوسط اليومي، المخزون الحالي، وأيام التغطية.  
+- ⏳ Flexible periods (weekly, monthly, custom ranges).  
+  فترات مرنة (أسبوعية، شهرية أو بنطاق مخصص).  
+- 🏷 Filter by warehouses or multiple internal locations.  
+  تصفية حسب المخازن أو عدة مواقع داخلية.  
+- 🔎 Smart handling of outgoing moves from selected warehouses.  
+  التعامل الذكي مع الحركات الخارجة من المخازن المحددة.  
+- 📑 Multiple report views: list, pivot, charts with filters/groupings.  
+  واجهات متعددة: قائمة، محوري، رسوم بيانية مع فلاتر وتجميعات.  
+
+**Extra | إضافات**
+- 🔄 Synchronization-ready and extendable.  
+  قابل للتزامن والتوسعة.  
+- 🤝 Need help or customization? Contact us for support or tailored analytics.  
+  هل تحتاج إلى مساعدة أو تخصيص؟ تواصل معنا للدعم أو التحليلات المخصصة.  
+    """,
+
     "installable": True,
     "application": False,
-    "license": "LGPL-3"
 }
